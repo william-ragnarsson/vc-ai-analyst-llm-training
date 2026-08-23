@@ -1,6 +1,5 @@
 # Data files
-datafile.csv
-data/datafile.csv
+data/
 
 # Python Virtual Environment
 .venv/
