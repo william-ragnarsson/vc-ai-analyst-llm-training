@@ -3,13 +3,11 @@ import os
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
-INPUT_CSV = os.path.join(PROJECT_ROOT, "data", "Plug and Play-Raw Data (1).csv")
+INPUT_CSV = os.path.join(PROJECT_ROOT, "data", "plug-and-play-raw.csv")
 
 # Output files to generate
 OUTPUT_FILES = [
-    os.path.join(PROJECT_ROOT, "data", "Plug and Play-Cleaned.csv"),
-    os.path.join(PROJECT_ROOT, "data", "Plug and Play-Raw Data (1) Copy.csv"),
-    os.path.join(PROJECT_ROOT, "data", "startups_data.csv"),
+    os.path.join(PROJECT_ROOT, "data", "startups-review-data-cleaned.csv"),
 ]
 
 def clean_csv():
@@ -73,10 +71,16 @@ def clean_csv():
             val = r[idx].strip() if len(r) > idx else ""
             row_out.append(val if val else "0")
 
-        # 4. Invest William
+        # 4. Invest William (Yes -> 1, No -> 0, empty -> 0)
         idx_iw = col_indices["Invest William"]
-        iw_val = r[idx_iw].strip() if len(r) > idx_iw else ""
-        row_out.append(iw_val if iw_val else "0")
+        iw_val = r[idx_iw].strip().lower() if len(r) > idx_iw else ""
+        if iw_val == "yes":
+            iw_clean = "1"
+        elif iw_val == "no":
+            iw_clean = "0"
+        else:
+            iw_clean = "0"
+        row_out.append(iw_clean)
 
         cleaned_data.append(row_out)
 
