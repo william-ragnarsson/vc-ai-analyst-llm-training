@@ -1,0 +1,56 @@
+[project]
+name = "vcml"
+version = "0.1.0"
+description = "Recovering a VC analyst's decision function from his own scoring rubric"
+requires-python = ">=3.13"
+
+# Runtime deps are deliberately minimal. Every learning algorithm in this project is
+# hand-written in NumPy; pandas/pyarrow are used only for CSV/parquet I/O.
+dependencies = [
+    "numpy>=2.1",
+    "pandas>=2.2",
+    "pyarrow>=17",
+]
+
+[project.optional-dependencies]
+# scikit-learn lives HERE, not in `dependencies`, on purpose. It is used only as a
+# correctness oracle in tests and by models/sklearn_baselines.py. Putting it in the dev
+# extra means the "no library does the learning" rule is enforced by the dependency
+# graph rather than by discipline.
+dev = [
+    "pytest>=8",
+    "pytest-xdist",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "scikit-learn>=1.5",
+    "scipy>=1.14",
+]
+paper = ["matplotlib>=3.9"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vcml"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "NPY", "RUF"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "parity: checks a hand-written implementation against scikit-learn",
+    "leakage: asserts no information crosses a train/validation boundary",
+    "slow: excluded from the default `make test` run",
+]
+
+[tool.mypy]
+# Strict typing on the frozen surface only. Experiment files are exempt: they are
+# written by many parallel sessions and churn far more than the core does.
+files = ["src/vcml/core", "src/vcml/models"]
+strict = true
