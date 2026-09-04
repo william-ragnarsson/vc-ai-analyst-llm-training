@@ -2,7 +2,7 @@
 PY := .venv/bin/python
 PIP := .venv/bin/pip
 
-.PHONY: help setup data lint format typecheck test test-core test-parity gradcheck leakage clean
+.PHONY: help setup data lint format typecheck test test-core test-parity gradcheck leakage check clean
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -37,7 +37,7 @@ test-parity:  ## Verify hand-written implementations against scikit-learn
 	$(PY) -m pytest -m parity -q
 
 gradcheck:  ## Finite-difference gradient checks
-	$(PY) -m pytest tests/models/test_gradcheck.py -q
+	$(PY) -m pytest -m gradcheck -q
 
 leakage:  ## Leakage guards, including the permutation canary
 	$(PY) -m pytest tests/leakage -q

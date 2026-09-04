@@ -16,7 +16,7 @@ from vcml.core.clean import (
     NO_VERDICT_NO_SCORES,
     clean_raw,
 )
-from vcml.core.config import CRITERIA, CRITERION_MAX, CRITERION_MIN
+from vcml.core.config import CRITERIA, CRITERION_MAX, CRITERION_MIN, RAW_CSV
 
 # Expected provenance: 822 raw rows -> 769 usable.
 EXPECTED_RAW = 822
@@ -27,6 +27,9 @@ EXPECTED_POSITIVES = 199
 
 @pytest.fixture(scope="module")
 def cleaned() -> tuple[dict[str, np.ndarray], object, dict[str, object]]:
+    """Reads the confidential raw export directly, so it skips without it."""
+    if not RAW_CSV.exists():
+        pytest.skip("needs data/raw/ (confidential; see AGENTS.md)")
     return clean_raw()
 
 

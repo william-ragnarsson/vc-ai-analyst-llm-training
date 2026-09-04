@@ -1,0 +1,47 @@
+name: check
+
+# Runs exactly what `make check` runs locally, so "green on my machine" and "green in
+# CI" cannot diverge. The confidential raw export is not available here: the suite is
+# built to skip the tests that need it and run everything else against the toy dataset
+# in tests/conftest.py, so a red build always means a real regression.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install locked dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.lock
+          pip install -e ".[dev,paper]"
+
+      - name: Lint
+        run: |
+          ruff check src tests
+          ruff format --check src tests
+
+      - name: Typecheck
+        run: mypy
+
+      - name: Core tests
+        run: pytest tests/core tests/models tests/leakage -q
+
+      - name: Leakage gate
+        run: pytest -m leakage -q
+
+      - name: Gradient checks
+        run: pytest -m gradcheck -q
+
+      - name: Oracle parity
+        run: pytest -m parity -q

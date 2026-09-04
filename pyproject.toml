@@ -43,9 +43,13 @@ select = ["E", "F", "I", "UP", "B", "SIM", "NPY", "RUF"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# --strict-markers so a typo'd mark is an error rather than a silently skipped gate:
+# `make leakage` collecting zero tests must never look like `make leakage` passing.
+addopts = "--strict-markers"
 markers = [
     "parity: checks a hand-written implementation against scikit-learn",
     "leakage: asserts no information crosses a train/validation boundary",
+    "gradcheck: finite-difference check of a hand-derived gradient",
     "slow: excluded from the default `make test` run",
 ]
 

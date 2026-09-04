@@ -10,8 +10,9 @@ from vcml.core.schema import Dataset
 
 
 @pytest.fixture(scope="module")
-def ds() -> Dataset:
-    return load_dataset()
+def ds(real_ds: Dataset) -> Dataset:
+    """The real scoresheet. Skips where data/raw/ is absent -- see tests/conftest.py."""
+    return real_ds
 
 
 class TestLoader:
